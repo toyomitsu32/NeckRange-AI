@@ -39,8 +39,19 @@ export function useCamera(): UseCameraReturn {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        
+        // ビデオのメタデータが読み込まれるまで待つ
+        await new Promise<void>((resolve) => {
+          if (videoRef.current) {
+            videoRef.current.onloadedmetadata = () => {
+              resolve();
+            };
+          }
+        });
+        
         await videoRef.current.play();
         setIsStreaming(true);
+        console.log('Camera started successfully');
       }
     } catch (err) {
       console.error('Camera error:', err);

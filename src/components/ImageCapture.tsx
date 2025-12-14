@@ -92,9 +92,9 @@ export const ImageCapture: React.FC<ImageCaptureProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
+        <div className="p-4 sm:p-6">
           <h2 className="text-2xl font-bold mb-2">{IMAGE_TYPE_LABELS[imageType]}</h2>
           <p className="text-gray-600 mb-4">{IMAGE_TYPE_INSTRUCTIONS[imageType]}</p>
 
@@ -108,7 +108,7 @@ export const ImageCapture: React.FC<ImageCaptureProps> = ({
             <video
               ref={videoRef}
               className="w-full h-auto"
-              style={{ maxHeight: '60vh' }}
+              style={{ maxHeight: '50vh' }}
               autoPlay
               playsInline
               muted
@@ -119,6 +119,14 @@ export const ImageCapture: React.FC<ImageCaptureProps> = ({
                 className="absolute inset-0 pointer-events-none"
                 style={{ width: '100%', height: '100%' }}
               />
+            )}
+            {!isStreaming && !error && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+                <div className="text-white text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                  <p>カメラを起動中...</p>
+                </div>
+              </div>
             )}
           </div>
 
@@ -134,16 +142,24 @@ export const ImageCapture: React.FC<ImageCaptureProps> = ({
             </label>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          {/* ステータス表示 */}
+          {!isStreaming && !error && (
+            <div className="mb-4 p-2 bg-blue-100 text-sm text-blue-700 rounded text-center">
+              ⏳ カメラを起動しています...
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={handleCapture}
               disabled={!isStreaming}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-colors min-h-[48px]"
+              title={isStreaming ? '撮影する' : 'カメラ起動中...'}
             >
               📸 撮影する
             </button>
 
-            <label className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors text-center">
+            <label className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors text-center flex items-center justify-center min-h-[48px]">
               📁 ファイルから選択
               <input
                 type="file"
@@ -158,7 +174,7 @@ export const ImageCapture: React.FC<ImageCaptureProps> = ({
                 stopCamera();
                 onCancel();
               }}
-              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              className="w-full sm:flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors min-h-[48px]"
             >
               キャンセル
             </button>
