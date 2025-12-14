@@ -70,8 +70,8 @@ export function calculateShoulderAngle(landmarks: Landmark[]): number {
 
 /**
  * 首の傾き角度を計算
- * 両肩の中点Mと鼻Nを結ぶ線と、垂直線のなす角を計算
- * θ = arctan((x_n - x_m) / (y_m - y_n)) × 180/π
+ * 両肩峰の中点（胸の中心）と顔の中心（両耳の中点、または鼻）を結ぶ線と、垂直線のなす角を計算
+ * θ = arctan((x_face - x_chest) / (y_chest - y_face)) × 180/π
  * 
  * @param landmarks - MediaPipeのランドマーク配列
  * @returns 首の傾き角度（度）正の値は右傾き、負の値は左傾き
@@ -80,10 +80,12 @@ export function calculateNeckTiltAngle(landmarks: Landmark[]): number {
   // 肩峰の位置を推定
   const leftAcromion = estimateAcromion(landmarks, 'left');
   const rightAcromion = estimateAcromion(landmarks, 'right');
+  const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
+  const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
   const nose = landmarks[POSE_LANDMARKS.NOSE];
 
-  if (!leftAcromion || !rightAcromion || !nose) {
-    throw new Error('必要なランドマークが検出されませんでした');
+  if (!leftAcromion || !rightAcromion) {
+    throw new Error('肩峰の検出に失敗しました');
   }
 
   // 肩峰のランドマークを安定化（精度向上のため）
@@ -93,19 +95,42 @@ export function calculateNeckTiltAngle(landmarks: Landmark[]): number {
   const chestCenterX = (stabilized.left.x + stabilized.right.x) / 2;
   const chestCenterY = (stabilized.left.y + stabilized.right.y) / 2;
 
-  // 胸の中心から鼻へのベクトルと垂直線のなす角を計算
-  const dx = nose.x - chestCenterX;
-  const dy = chestCenterY - nose.y; // Y軸は下向きなので反転
+  // 顔の中心を計算（優先順位: 耳の中点 > 鼻）
+  let faceCenterX: number;
+  let faceCenterY: number;
+  let faceMethod: string;
+
+  if (leftEar && rightEar && 
+      leftEar.visibility !== undefined && leftEar.visibility > 0.5 &&
+      rightEar.visibility !== undefined && rightEar.visibility > 0.5) {
+    // 両耳が検出されている場合は耳の中点を使用（より正確）
+    faceCenterX = (leftEar.x + rightEar.x) / 2;
+    faceCenterY = (leftEar.y + rightEar.y) / 2;
+    faceMethod = 'ears';
+  } else if (nose) {
+    // 耳が検出されていない場合は鼻を使用
+    faceCenterX = nose.x;
+    faceCenterY = nose.y;
+    faceMethod = 'nose (fallback)';
+  } else {
+    throw new Error('顔の中心を計算するためのランドマークが検出されませんでした');
+  }
+
+  // 胸の中心から顔の中心へのベクトルと垂直線のなす角を計算
+  const dx = faceCenterX - chestCenterX;
+  const dy = chestCenterY - faceCenterY; // Y軸は下向きなので反転
 
   // atan2を使用して角度を計算（垂直線からの傾き）
   const radians = Math.atan2(dx, dy);
   const degrees = radians * (180 / Math.PI);
 
-  console.log('Neck tilt angle calculation (using acromion):', {
-    chestCenter: { x: chestCenterX, y: chestCenterY },
-    nose: { x: nose.x, y: nose.y },
-    dx, dy,
-    degrees
+  console.log('Neck tilt angle calculation:', {
+    method: faceMethod,
+    chestCenter: { x: chestCenterX.toFixed(3), y: chestCenterY.toFixed(3) },
+    faceCenter: { x: faceCenterX.toFixed(3), y: faceCenterY.toFixed(3) },
+    dx: dx.toFixed(4), 
+    dy: dy.toFixed(4),
+    degrees: degrees.toFixed(2) + '°'
   });
 
   return degrees;
