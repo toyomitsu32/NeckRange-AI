@@ -184,29 +184,81 @@ export function drawGuideline(
   const faceGuideRadiusX = width * 0.15;
   const faceGuideRadiusY = height * 0.2;
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([10, 10]);
-  
+  // 顔ガイドの影（立体感）
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.lineWidth = 8;
+  ctx.setLineDash([15, 10]);
+  ctx.beginPath();
+  ctx.ellipse(faceGuideX, faceGuideY + 2, faceGuideRadiusX, faceGuideRadiusY, 0, 0, 2 * Math.PI);
+  ctx.stroke();
+
+  // 顔ガイド（明るく太く）
+  ctx.strokeStyle = 'rgba(0, 255, 255, 0.9)'; // シアン色で目立つように
+  ctx.lineWidth = 5;
+  ctx.setLineDash([15, 10]);
   ctx.beginPath();
   ctx.ellipse(faceGuideX, faceGuideY, faceGuideRadiusX, faceGuideRadiusY, 0, 0, 2 * Math.PI);
   ctx.stroke();
 
-  // 肩の位置ガイド（水平線）
+  // 肩の位置ガイド（水平線）- 影
   const shoulderY = height * 0.5;
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+  ctx.lineWidth = 8;
+  ctx.setLineDash([20, 10]);
   ctx.beginPath();
-  ctx.moveTo(width * 0.2, shoulderY);
-  ctx.lineTo(width * 0.8, shoulderY);
+  ctx.moveTo(width * 0.15, shoulderY + 2);
+  ctx.lineTo(width * 0.85, shoulderY + 2);
   ctx.stroke();
+
+  // 肩の位置ガイド（水平線）- メイン
+  ctx.strokeStyle = 'rgba(255, 215, 0, 0.95)'; // ゴールド色で目立つように
+  ctx.lineWidth = 5;
+  ctx.setLineDash([20, 10]);
+  ctx.beginPath();
+  ctx.moveTo(width * 0.15, shoulderY);
+  ctx.lineTo(width * 0.85, shoulderY);
+  ctx.stroke();
+
+  // 肩ラインの端点マーカー
+  ctx.fillStyle = 'rgba(255, 215, 0, 0.95)';
+  ctx.beginPath();
+  ctx.arc(width * 0.15, shoulderY, 8, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(width * 0.85, shoulderY, 8, 0, 2 * Math.PI);
+  ctx.fill();
 
   ctx.setLineDash([]);
 
-  // ガイドテキスト
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-  ctx.font = '16px Arial';
+  // ガイドテキスト - 影
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+  ctx.font = 'bold 20px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('顔をここに合わせてください', faceGuideX, faceGuideY - faceGuideRadiusY - 10);
-  ctx.fillText('肩のラインを水平に', faceGuideX, shoulderY + 30);
+  ctx.fillText('顔をここに合わせてください', faceGuideX + 1, faceGuideY - faceGuideRadiusY - 14);
+  ctx.fillText('肩のラインを水平に保ってください', faceGuideX + 1, shoulderY + 36);
+
+  // ガイドテキスト - メイン
+  ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
+  ctx.font = 'bold 20px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('顔をここに合わせてください', faceGuideX, faceGuideY - faceGuideRadiusY - 15);
+  
+  // 肩ラインテキストは背景付き
+  const shoulderText = '肩のラインを水平に保ってください';
+  const textMetrics = ctx.measureText(shoulderText);
+  const textWidth = textMetrics.width;
+  const textHeight = 25;
+  const textX = faceGuideX;
+  const textY = shoulderY + 35;
+  
+  // テキスト背景（半透明の黒背景）
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+  ctx.fillRect(textX - textWidth / 2 - 10, textY - textHeight + 5, textWidth + 20, textHeight);
+  
+  // テキスト
+  ctx.fillStyle = 'rgba(255, 215, 0, 1.0)';
+  ctx.font = 'bold 20px Arial';
+  ctx.fillText(shoulderText, textX, textY);
 }
 
 /**
