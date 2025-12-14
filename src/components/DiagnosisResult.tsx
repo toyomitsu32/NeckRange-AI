@@ -89,7 +89,7 @@ export const DiagnosisResult: React.FC<DiagnosisResultProps> = ({ result, onRese
         {/* 右側屈 */}
         <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border-2 border-blue-200">
           <h3 className="text-xl font-semibold mb-4 text-blue-900">右側屈</h3>
-          <div className="text-center">
+          <div className="text-center mb-4">
             <div className="text-5xl font-bold text-blue-600 mb-2">
               {result.rightAngle.toFixed(1)}°
             </div>
@@ -100,12 +100,30 @@ export const DiagnosisResult: React.FC<DiagnosisResultProps> = ({ result, onRese
               {getFlexibilityLabel(result.rightFlexibility)}
             </div>
           </div>
+          
+          {/* 詳細情報 */}
+          {result.rightImage && (
+            <div className="border-t border-blue-300 pt-4 space-y-2 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">📐 首の傾き（垂直から）:</span>
+                <span className="font-bold text-blue-700">{result.rightImage.angle.toFixed(1)}°</span>
+              </div>
+              {result.rightShoulderAngle !== undefined && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">📏 肩の傾き（水平から）:</span>
+                  <span className={`font-bold ${Math.abs(result.rightShoulderAngle) <= 5 ? 'text-green-600' : Math.abs(result.rightShoulderAngle) <= 10 ? 'text-orange-600' : 'text-red-600'}`}>
+                    {result.rightShoulderAngle.toFixed(1)}°
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 左側屈 */}
         <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border-2 border-green-200">
           <h3 className="text-xl font-semibold mb-4 text-green-900">左側屈</h3>
-          <div className="text-center">
+          <div className="text-center mb-4">
             <div className="text-5xl font-bold text-green-600 mb-2">
               {result.leftAngle.toFixed(1)}°
             </div>
@@ -116,6 +134,24 @@ export const DiagnosisResult: React.FC<DiagnosisResultProps> = ({ result, onRese
               {getFlexibilityLabel(result.leftFlexibility)}
             </div>
           </div>
+          
+          {/* 詳細情報 */}
+          {result.leftImage && (
+            <div className="border-t border-green-300 pt-4 space-y-2 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">📐 首の傾き（垂直から）:</span>
+                <span className="font-bold text-green-700">{result.leftImage.angle.toFixed(1)}°</span>
+              </div>
+              {result.leftShoulderAngle !== undefined && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">📏 肩の傾き（水平から）:</span>
+                  <span className={`font-bold ${Math.abs(result.leftShoulderAngle) <= 5 ? 'text-green-600' : Math.abs(result.leftShoulderAngle) <= 10 ? 'text-orange-600' : 'text-red-600'}`}>
+                    {result.leftShoulderAngle.toFixed(1)}°
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

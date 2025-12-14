@@ -15,6 +15,7 @@ interface CapturedImage {
   url: string;
   landmarks?: Landmark[];
   angle?: number;
+  shoulderAngle?: number;
 }
 
 type AppState = 'intro' | 'capture' | 'analyze' | 'result';
@@ -41,10 +42,10 @@ function App() {
     setAppState('analyze');
   };
 
-  const handleAnalysisComplete = (landmarks: Landmark[], angle: number) => {
+  const handleAnalysisComplete = (landmarks: Landmark[], angle: number, shoulderAngle?: number) => {
     const updatedImages = capturedImages.map(img =>
       img.type === currentImageType
-        ? { ...img, landmarks, angle }
+        ? { ...img, landmarks, angle, shoulderAngle }
         : img
     );
     setCapturedImages(updatedImages);
@@ -112,24 +113,30 @@ function App() {
       asymmetry,
       asymmetryDiff,
       recommendations,
+      // 肩の傾き角度（側屈時）
+      rightShoulderAngle: right.shoulderAngle,
+      leftShoulderAngle: left.shoulderAngle,
       // 画像データを含める
       neutralImage: {
         type: neutral.type,
         url: neutral.url,
         landmarks: neutral.landmarks,
-        angle: neutral.angle
+        angle: neutral.angle,
+        shoulderAngle: neutral.shoulderAngle
       },
       rightImage: {
         type: right.type,
         url: right.url,
         landmarks: right.landmarks,
-        angle: right.angle
+        angle: right.angle,
+        shoulderAngle: right.shoulderAngle
       },
       leftImage: {
         type: left.type,
         url: left.url,
         landmarks: left.landmarks,
-        angle: left.angle
+        angle: left.angle,
+        shoulderAngle: left.shoulderAngle
       }
     };
 

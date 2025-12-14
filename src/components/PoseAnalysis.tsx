@@ -15,7 +15,7 @@ import {
 interface PoseAnalysisProps {
   imageUrl: string;
   imageType: ImageType;
-  onAnalysisComplete: (landmarks: Landmark[], angle: number) => void;
+  onAnalysisComplete: (landmarks: Landmark[], angle: number, shoulderAngle?: number) => void;
   onError: (error: string) => void;
 }
 
@@ -83,8 +83,10 @@ export const PoseAnalysis: React.FC<PoseAnalysisProps> = ({
         // Landmarks are used in drawAnalysisResult
 
         // 肩の水平検証（正面以外の場合）
+        let shoulderAngle: number | undefined;
         if (imageType !== ImageType.NEUTRAL) {
           const shoulderValidation = validateShoulderLevel(detectedLandmarks);
+          shoulderAngle = shoulderValidation.angle; // 肩の角度を保存
           
           if (!shoulderValidation.isValid) {
             onError(shoulderValidation.message);
@@ -99,9 +101,9 @@ export const PoseAnalysis: React.FC<PoseAnalysisProps> = ({
         // 解析結果を描画
         drawAnalysisResult(img, detectedLandmarks, true, `角度: ${neckAngle.toFixed(1)}°`);
 
-        // 解析完了を通知
+        // 解析完了を通知（肩の角度も渡す）
         hasAnalyzedRef.current = true; // 処理済みフラグをセット
-        onAnalysisComplete(detectedLandmarks, neckAngle);
+        onAnalysisComplete(detectedLandmarks, neckAngle, shoulderAngle);
       } catch (error) {
         console.error('Analysis error:', error);
         onError(

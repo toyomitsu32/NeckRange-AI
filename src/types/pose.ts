@@ -59,14 +59,15 @@ export interface CapturedImageData {
   type: ImageType;
   url: string;
   landmarks: Landmark[];
-  angle: number;
+  angle: number;              // 首の傾き角度（垂直方向からの傾き）
+  shoulderAngle?: number;     // 肩の傾き角度（水平方向からの傾き）
 }
 
 /**
  * 診断結果
  */
 export interface DiagnosisResult {
-  neutralAngle: number;      // 正面（中心）の角度
+  neutralAngle: number;      // 正面（中心）の首の角度
   rightAngle: number;         // 正面から右側屈への角度差
   leftAngle: number;          // 正面から左側屈への角度差
   rightFlexibility: FlexibilityLevel;
@@ -78,6 +79,9 @@ export interface DiagnosisResult {
   neutralImage?: CapturedImageData;
   rightImage?: CapturedImageData;
   leftImage?: CapturedImageData;
+  // 肩の傾き角度（側屈時のみ）
+  rightShoulderAngle?: number;  // 右側屈時の肩の傾き
+  leftShoulderAngle?: number;   // 左側屈時の肩の傾き
 }
 
 /**
