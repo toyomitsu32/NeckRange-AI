@@ -1,0 +1,109 @@
+/**
+ * MediaPipe Poseのランドマーク座標
+ */
+export interface Landmark {
+  x: number;
+  y: number;
+  z: number;
+  visibility?: number;
+}
+
+/**
+ * 姿勢検出結果
+ */
+export interface PoseResults {
+  poseLandmarks?: Landmark[];
+  image: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement;
+}
+
+/**
+ * 画像タイプ
+ */
+export enum ImageType {
+  NEUTRAL = 'neutral',    // 正面
+  RIGHT_TILT = 'right',   // 右側屈
+  LEFT_TILT = 'left'      // 左側屈
+}
+
+/**
+ * アップロードされた画像情報
+ */
+export interface UploadedImage {
+  type: ImageType;
+  file: File;
+  url: string;
+  landmarks?: Landmark[];
+}
+
+/**
+ * 肩の傾き検証結果
+ */
+export interface ShoulderValidation {
+  isValid: boolean;
+  angle: number;
+  message: string;
+}
+
+/**
+ * 首の角度測定結果
+ */
+export interface NeckAngle {
+  angle: number;
+  type: ImageType;
+}
+
+/**
+ * 診断結果
+ */
+export interface DiagnosisResult {
+  rightAngle: number;
+  leftAngle: number;
+  rightFlexibility: FlexibilityLevel;
+  leftFlexibility: FlexibilityLevel;
+  asymmetry: AsymmetryLevel;
+  asymmetryDiff: number;
+  recommendations: string[];
+}
+
+/**
+ * 柔軟性レベル
+ */
+export enum FlexibilityLevel {
+  STIFF = 'stiff',           // 硬い (< 30°)
+  SOMEWHAT_STIFF = 'somewhat_stiff', // やや硬い (30° - 40°)
+  NORMAL = 'normal',         // 普通 (40° - 50°)
+  FLEXIBLE = 'flexible'      // 柔軟 (> 50°)
+}
+
+/**
+ * 左右差レベル
+ */
+export enum AsymmetryLevel {
+  NORMAL = 'normal',         // 正常 (< 5°)
+  MILD = 'mild',            // 軽度 (5° - 10°)
+  MODERATE = 'moderate',     // 中等度 (10° - 15°)
+  SIGNIFICANT = 'significant' // 顕著 (> 15°)
+}
+
+/**
+ * MediaPipe Poseのランドマークインデックス
+ */
+export const POSE_LANDMARKS = {
+  NOSE: 0,
+  LEFT_EYE_INNER: 1,
+  LEFT_EYE: 2,
+  LEFT_EYE_OUTER: 3,
+  RIGHT_EYE_INNER: 4,
+  RIGHT_EYE: 5,
+  RIGHT_EYE_OUTER: 6,
+  LEFT_EAR: 7,
+  RIGHT_EAR: 8,
+  MOUTH_LEFT: 9,
+  MOUTH_RIGHT: 10,
+  LEFT_SHOULDER: 11,
+  RIGHT_SHOULDER: 12,
+  LEFT_ELBOW: 13,
+  RIGHT_ELBOW: 14,
+  LEFT_WRIST: 15,
+  RIGHT_WRIST: 16,
+} as const;
