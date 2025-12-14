@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ImageType, Landmark, DiagnosisResult as DiagnosisResultType } from './types/pose';
 import { ImageCapture } from './components/ImageCapture';
 import { PoseAnalysis } from './components/PoseAnalysis';

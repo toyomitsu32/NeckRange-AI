@@ -18,7 +18,7 @@ export function drawLandmarks(
   
   landmarks.forEach((landmark, index) => {
     // 重要なランドマークのみを描画
-    const importantIndices = [
+    const importantIndices: number[] = [
       POSE_LANDMARKS.NOSE,
       POSE_LANDMARKS.LEFT_EYE,
       POSE_LANDMARKS.RIGHT_EYE,

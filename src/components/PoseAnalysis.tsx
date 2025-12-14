@@ -4,7 +4,6 @@ import { usePoseDetection } from '../hooks/usePoseDetection';
 import { validateShoulderLevel } from '../utils/validationUtils';
 import { calculateNeckTiltAngle } from '../utils/angleUtils';
 import {
-  clearCanvas,
   drawLandmarks,
   drawSkeleton,
   drawShoulderLine,
@@ -27,14 +26,13 @@ export const PoseAnalysis: React.FC<PoseAnalysisProps> = ({
   onError,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
-  const [landmarks, setLandmarks] = useState<Landmark[] | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const { processImage, isLoading: isPoseLoading } = usePoseDetection();
 
   useEffect(() => {
     const analyzeImage = async () => {
-      if (!imageRef.current || isPoseLoading) return;
+      if (isPoseLoading) return;
 
       setIsAnalyzing(true);
 
@@ -59,7 +57,7 @@ export const PoseAnalysis: React.FC<PoseAnalysisProps> = ({
           return;
         }
 
-        setLandmarks(detectedLandmarks);
+        // Landmarks are used in drawAnalysisResult
 
         // 肩の水平検証（正面以外の場合）
         if (imageType !== ImageType.NEUTRAL) {

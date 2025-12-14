@@ -9,6 +9,11 @@ export default defineConfig({
     port: 4000,
     strictPort: false
   },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+  },
+  publicDir: 'public',
   optimizeDeps: {
     exclude: ['@mediapipe/pose']
   }
