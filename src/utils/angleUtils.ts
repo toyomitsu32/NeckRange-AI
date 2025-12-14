@@ -33,24 +33,25 @@ export function calculateShoulderAngle(landmarks: Landmark[]): number {
   }
 
   // 左右の肩の座標差を計算
-  const dx = leftShoulder.x - rightShoulder.x;
+  const dx = Math.abs(leftShoulder.x - rightShoulder.x);
   const dy = leftShoulder.y - rightShoulder.y;
 
-  // atan2を使用して水平線からの角度を計算
-  // dy/dxの比率から傾きを求める
-  const radians = Math.atan2(dy, dx);
+  // デバッグログ
+  console.log('Shoulder coordinates:', {
+    left: { x: leftShoulder.x, y: leftShoulder.y },
+    right: { x: rightShoulder.x, y: rightShoulder.y },
+    dx, dy
+  });
+
+  // Y座標の差から傾きを計算（シンプルな方法）
+  // 小さな角度の場合、tan(θ) ≈ θ なので dy/dx で十分
+  // ただし、より正確にするため atan を使用
+  const radians = Math.atan(dy / dx);
   const degrees = radians * (180 / Math.PI);
 
-  // 水平線を0度とするため、計算結果を調整
-  // atan2(dy, dx)は水平右向きを0度とするため、補正が必要
-  // 肩の並びは左→右なので、180度回転させて0度を水平に合わせる
-  let shoulderAngle = degrees - 180;
+  console.log('Shoulder angle calculation:', { radians, degrees });
 
-  // -180°〜180°の範囲に正規化
-  if (shoulderAngle > 180) shoulderAngle -= 360;
-  if (shoulderAngle < -180) shoulderAngle += 360;
-
-  return shoulderAngle;
+  return degrees;
 }
 
 /**
