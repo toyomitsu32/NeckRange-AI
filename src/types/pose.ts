@@ -56,8 +56,9 @@ export interface NeckAngle {
  * 診断結果
  */
 export interface DiagnosisResult {
-  rightAngle: number;
-  leftAngle: number;
+  neutralAngle: number;      // 正面（中心）の角度
+  rightAngle: number;         // 正面から右側屈への角度差
+  leftAngle: number;          // 正面から左側屈への角度差
   rightFlexibility: FlexibilityLevel;
   leftFlexibility: FlexibilityLevel;
   asymmetry: AsymmetryLevel;

@@ -19,6 +19,19 @@ export const DiagnosisResult: React.FC<DiagnosisResultProps> = ({ result, onRese
         📊 診断結果
       </h2>
 
+      {/* 正面（中心）の角度 */}
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6 border-2 border-gray-300 mb-6">
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 text-center">📍 正面（中心）の首の角度</h3>
+        <div className="text-center">
+          <div className="text-4xl font-bold text-gray-700 mb-2">
+            {result.neutralAngle.toFixed(1)}°
+          </div>
+          <div className="text-sm text-gray-600">
+            ※ 0度が完全に垂直な状態です
+          </div>
+        </div>
+      </div>
+
       {/* 角度測定結果 */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         {/* 右側屈 */}
@@ -27,6 +40,9 @@ export const DiagnosisResult: React.FC<DiagnosisResultProps> = ({ result, onRese
           <div className="text-center">
             <div className="text-5xl font-bold text-blue-600 mb-2">
               {result.rightAngle.toFixed(1)}°
+            </div>
+            <div className="text-sm text-gray-600 mb-2">
+              中心から右へ傾けた角度
             </div>
             <div className={`text-lg font-semibold ${getFlexibilityColor(result.rightFlexibility)}`}>
               {getFlexibilityLabel(result.rightFlexibility)}
@@ -40,6 +56,9 @@ export const DiagnosisResult: React.FC<DiagnosisResultProps> = ({ result, onRese
           <div className="text-center">
             <div className="text-5xl font-bold text-green-600 mb-2">
               {result.leftAngle.toFixed(1)}°
+            </div>
+            <div className="text-sm text-gray-600 mb-2">
+              中心から左へ傾けた角度
             </div>
             <div className={`text-lg font-semibold ${getFlexibilityColor(result.leftFlexibility)}`}>
               {getFlexibilityLabel(result.leftFlexibility)}

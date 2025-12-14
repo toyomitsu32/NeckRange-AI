@@ -103,6 +103,7 @@ function App() {
     );
 
     const result: DiagnosisResultType = {
+      neutralAngle: neutral.angle,  // 正面（中心）の角度
       rightAngle,
       leftAngle,
       rightFlexibility,
