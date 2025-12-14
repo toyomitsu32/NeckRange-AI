@@ -200,8 +200,8 @@ export function drawGuideline(
   ctx.ellipse(faceGuideX, faceGuideY, faceGuideRadiusX, faceGuideRadiusY, 0, 0, 2 * Math.PI);
   ctx.stroke();
 
-  // 肩の位置ガイド（水平線）- 影
-  const shoulderY = height * 0.65; // 0.5 → 0.65 に変更（下に移動）
+  // 肩の位置ガイド（水平線）- 影（画面下から1/3の位置 = 画面上から2/3）
+  const shoulderY = height * 0.67; // 画面下から1/3（約67%）の位置に配置
   ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
   ctx.lineWidth = 8;
   ctx.setLineDash([20, 10]);
