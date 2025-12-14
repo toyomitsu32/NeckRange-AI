@@ -178,9 +178,9 @@ export function drawGuideline(
   width: number,
   height: number
 ): void {
-  // 顔の位置ガイド（楕円）
+  // 顔の位置ガイド（楕円）- 頭頂が画面上部に収まるよう下に配置
   const faceGuideX = width / 2;
-  const faceGuideY = height * 0.3;
+  const faceGuideY = height * 0.40; // 0.3 → 0.40 に変更（下に移動）
   const faceGuideRadiusX = width * 0.15;
   const faceGuideRadiusY = height * 0.2;
 
@@ -201,7 +201,7 @@ export function drawGuideline(
   ctx.stroke();
 
   // 肩の位置ガイド（水平線）- 影
-  const shoulderY = height * 0.5;
+  const shoulderY = height * 0.65; // 0.5 → 0.65 に変更（下に移動）
   ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
   ctx.lineWidth = 8;
   ctx.setLineDash([20, 10]);
