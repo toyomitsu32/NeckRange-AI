@@ -70,7 +70,7 @@ export function calculateShoulderAngle(landmarks: Landmark[]): number {
 
 /**
  * 首の傾き角度を計算
- * 両肩峰の中点（胸の中心）と顔の中心（両耳の中点、または鼻）を結ぶ線と、垂直線のなす角を計算
+ * 両肩峰の中点（胸の中心）と顔の中心（両目の中点）を結ぶ線と、垂直線のなす角を計算
  * θ = arctan((x_face - x_chest) / (y_chest - y_face)) × 180/π
  * 
  * @param landmarks - MediaPipeのランドマーク配列
@@ -80,8 +80,14 @@ export function calculateNeckTiltAngle(landmarks: Landmark[]): number {
   // 肩峰の位置を推定
   const leftAcromion = estimateAcromion(landmarks, 'left');
   const rightAcromion = estimateAcromion(landmarks, 'right');
-  const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
-  const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
+  
+  // 目のランドマーク（内側と外側の平均を使用してより正確に）
+  const leftEyeInner = landmarks[POSE_LANDMARKS.LEFT_EYE_INNER];
+  const leftEyeOuter = landmarks[POSE_LANDMARKS.LEFT_EYE_OUTER];
+  const leftEye = landmarks[POSE_LANDMARKS.LEFT_EYE];
+  const rightEyeInner = landmarks[POSE_LANDMARKS.RIGHT_EYE_INNER];
+  const rightEyeOuter = landmarks[POSE_LANDMARKS.RIGHT_EYE_OUTER];
+  const rightEye = landmarks[POSE_LANDMARKS.RIGHT_EYE];
   const nose = landmarks[POSE_LANDMARKS.NOSE];
 
   if (!leftAcromion || !rightAcromion) {
@@ -95,20 +101,65 @@ export function calculateNeckTiltAngle(landmarks: Landmark[]): number {
   const chestCenterX = (stabilized.left.x + stabilized.right.x) / 2;
   const chestCenterY = (stabilized.left.y + stabilized.right.y) / 2;
 
-  // 顔の中心を計算（優先順位: 耳の中点 > 鼻）
+  // 顔の中心を計算（優先順位: 両目の中点 > 鼻）
   let faceCenterX: number;
   let faceCenterY: number;
   let faceMethod: string;
 
-  if (leftEar && rightEar && 
-      leftEar.visibility !== undefined && leftEar.visibility > 0.5 &&
-      rightEar.visibility !== undefined && rightEar.visibility > 0.5) {
-    // 両耳が検出されている場合は耳の中点を使用（より正確）
-    faceCenterX = (leftEar.x + rightEar.x) / 2;
-    faceCenterY = (leftEar.y + rightEar.y) / 2;
-    faceMethod = 'ears';
+  // 左目の中心を計算（内側、中央、外側の平均）
+  let leftEyeCenterX = 0;
+  let leftEyeCenterY = 0;
+  let leftEyeCount = 0;
+  
+  if (leftEyeInner && leftEyeInner.visibility !== undefined && leftEyeInner.visibility > 0.5) {
+    leftEyeCenterX += leftEyeInner.x;
+    leftEyeCenterY += leftEyeInner.y;
+    leftEyeCount++;
+  }
+  if (leftEye && leftEye.visibility !== undefined && leftEye.visibility > 0.5) {
+    leftEyeCenterX += leftEye.x;
+    leftEyeCenterY += leftEye.y;
+    leftEyeCount++;
+  }
+  if (leftEyeOuter && leftEyeOuter.visibility !== undefined && leftEyeOuter.visibility > 0.5) {
+    leftEyeCenterX += leftEyeOuter.x;
+    leftEyeCenterY += leftEyeOuter.y;
+    leftEyeCount++;
+  }
+
+  // 右目の中心を計算（内側、中央、外側の平均）
+  let rightEyeCenterX = 0;
+  let rightEyeCenterY = 0;
+  let rightEyeCount = 0;
+  
+  if (rightEyeInner && rightEyeInner.visibility !== undefined && rightEyeInner.visibility > 0.5) {
+    rightEyeCenterX += rightEyeInner.x;
+    rightEyeCenterY += rightEyeInner.y;
+    rightEyeCount++;
+  }
+  if (rightEye && rightEye.visibility !== undefined && rightEye.visibility > 0.5) {
+    rightEyeCenterX += rightEye.x;
+    rightEyeCenterY += rightEye.y;
+    rightEyeCount++;
+  }
+  if (rightEyeOuter && rightEyeOuter.visibility !== undefined && rightEyeOuter.visibility > 0.5) {
+    rightEyeCenterX += rightEyeOuter.x;
+    rightEyeCenterY += rightEyeOuter.y;
+    rightEyeCount++;
+  }
+
+  if (leftEyeCount > 0 && rightEyeCount > 0) {
+    // 両目が検出されている場合は両目の中点を使用（最も正確）
+    leftEyeCenterX /= leftEyeCount;
+    leftEyeCenterY /= leftEyeCount;
+    rightEyeCenterX /= rightEyeCount;
+    rightEyeCenterY /= rightEyeCount;
+    
+    faceCenterX = (leftEyeCenterX + rightEyeCenterX) / 2;
+    faceCenterY = (leftEyeCenterY + rightEyeCenterY) / 2;
+    faceMethod = 'eyes';
   } else if (nose) {
-    // 耳が検出されていない場合は鼻を使用
+    // 目が検出されていない場合は鼻を使用
     faceCenterX = nose.x;
     faceCenterY = nose.y;
     faceMethod = 'nose (fallback)';
