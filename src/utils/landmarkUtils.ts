@@ -120,6 +120,77 @@ export function smoothLandmarks(
 }
 
 /**
+ * 首の根本（下部）の位置を推定
+ * 
+ * 肩峰の中点を首の根本として使用
+ * 
+ * @param landmarks - MediaPipeのランドマーク配列
+ * @returns 首の根本の位置
+ */
+export function estimateNeckBase(landmarks: Landmark[]): Landmark {
+  const leftAcromion = estimateAcromion(landmarks, 'left');
+  const rightAcromion = estimateAcromion(landmarks, 'right');
+
+  return {
+    x: (leftAcromion.x + rightAcromion.x) / 2,
+    y: (leftAcromion.y + rightAcromion.y) / 2,
+    z: (leftAcromion.z + rightAcromion.z) / 2,
+    visibility: Math.min(leftAcromion.visibility || 1, rightAcromion.visibility || 1)
+  };
+}
+
+/**
+ * 首の上部の位置を推定
+ * 
+ * 両耳の中点を首の上部として使用
+ * 
+ * @param landmarks - MediaPipeのランドマーク配列
+ * @returns 首の上部の位置
+ */
+export function estimateNeckTop(landmarks: Landmark[]): Landmark {
+  const POSE_LANDMARKS = {
+    LEFT_EAR: 7,
+    RIGHT_EAR: 8,
+  };
+
+  const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
+  const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
+
+  if (!leftEar || !rightEar) {
+    // フォールバック: 鼻を使用
+    const nose = landmarks[0]; // NOSE
+    return nose || { x: 0, y: 0, z: 0 };
+  }
+
+  return {
+    x: (leftEar.x + rightEar.x) / 2,
+    y: (leftEar.y + rightEar.y) / 2,
+    z: (leftEar.z + rightEar.z) / 2,
+    visibility: Math.min(leftEar.visibility || 1, rightEar.visibility || 1)
+  };
+}
+
+/**
+ * 首の中心の位置を推定
+ * 
+ * 首の根本（肩峰の中点）と首の上部（耳の中点）の中点
+ * 
+ * @param landmarks - MediaPipeのランドマーク配列
+ * @returns 首の中心の位置
+ */
+export function estimateNeckCenter(landmarks: Landmark[]): Landmark {
+  const neckBase = estimateNeckBase(landmarks);
+  const neckTop = estimateNeckTop(landmarks);
+
+  return {
+    x: (neckBase.x + neckTop.x) / 2,
+    y: (neckBase.y + neckTop.y) / 2,
+    z: (neckBase.z + neckTop.z) / 2,
+    visibility: Math.min(neckBase.visibility || 1, neckTop.visibility || 1)
+  };
+}
+
+/**
  * 肩峰（acromion）の位置を推定
  * 
  * MediaPipe Poseには肩峰専用のランドマークがないため、
