@@ -183,7 +183,11 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="text-4xl">🧘‍♂️</div>
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold gradient-text">
                   NeckRange AI
@@ -192,7 +196,7 @@ function App() {
               </div>
             </div>
             <div className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-100 to-blue-100 px-4 py-2 rounded-full">
-              <span className="text-xl">✨</span>
+              <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-blue-500"></div>
               <span className="text-sm font-semibold text-gray-700">プロ整体師レベルの診断</span>
             </div>
           </div>
@@ -230,22 +234,32 @@ function App() {
                   </p>
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     <div className="flex items-center gap-2 text-gray-600">
-                      <span className="text-2xl">⚡</span>
+                      <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
                       <span className="font-medium">わずか3分</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600">
-                      <span className="text-2xl">🎯</span>
+                      <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                       <span className="font-medium">高精度AI診断</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600">
-                      <span className="text-2xl">📊</span>
+                      <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
                       <span className="font-medium">詳細レポート</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex-1 relative">
                   <div className="relative animate-float">
-                    <div className="text-9xl text-center">🧘‍♂️</div>
+                    <div className="w-64 h-64 mx-auto rounded-3xl bg-gradient-to-br from-purple-500 via-blue-500 to-teal-400 shadow-2xl flex items-center justify-center">
+                      <svg className="w-32 h-32 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
                     <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-white/50 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
                       <span className="text-sm font-semibold text-gray-700">首の健康チェック</span>
                     </div>
@@ -262,7 +276,13 @@ function App() {
                 </div>
                 <h3 className="text-xl font-bold mb-2 text-gray-800">正面を撮影</h3>
                 <p className="text-gray-600 mb-4">まっすぐ前を向いた状態で撮影します</p>
-                <div className="text-6xl text-center animate-pulse-soft">👤</div>
+                <div className="flex justify-center mt-6">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                    <svg className="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div className="glass-card rounded-2xl p-6 hover-lift animate-fade-in-up" style={{animationDelay: '0.2s'}}>
@@ -271,7 +291,13 @@ function App() {
                 </div>
                 <h3 className="text-xl font-bold mb-2 text-gray-800">右側屈を撮影</h3>
                 <p className="text-gray-600 mb-4">肩を動かさず、首だけを右に傾けます</p>
-                <div className="text-6xl text-center animate-pulse-soft" style={{animationDelay: '0.3s'}}>🙇</div>
+                <div className="flex justify-center mt-6">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center transform rotate-12">
+                    <svg className="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div className="glass-card rounded-2xl p-6 hover-lift animate-fade-in-up" style={{animationDelay: '0.3s'}}>
@@ -280,31 +306,49 @@ function App() {
                 </div>
                 <h3 className="text-xl font-bold mb-2 text-gray-800">左側屈を撮影</h3>
                 <p className="text-gray-600 mb-4">肩を動かさず、首だけを左に傾けます</p>
-                <div className="text-6xl text-center animate-pulse-soft" style={{animationDelay: '0.6s'}}>🙇‍♂️</div>
+                <div className="flex justify-center mt-6">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink-100 to-red-100 flex items-center justify-center transform -rotate-12">
+                    <svg className="w-12 h-12 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* 注意事項 */}
             <div className="glass-card rounded-2xl p-6 mb-8 border-l-4 border-yellow-500 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
               <div className="flex items-start gap-4">
-                <div className="text-4xl">💡</div>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold mb-3 text-gray-800">撮影のコツ</h3>
                   <div className="grid md:grid-cols-2 gap-3">
                     <div className="flex items-center gap-2 text-gray-700">
-                      <span className="text-green-500">✓</span>
+                      <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
                       <span>肩を水平に保つ</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-700">
-                      <span className="text-green-500">✓</span>
+                      <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
                       <span>明るい場所で撮影</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-700">
-                      <span className="text-green-500">✓</span>
+                      <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
                       <span>顔と肩を画面内に</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-700">
-                      <span className="text-green-500">✓</span>
+                      <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
                       <span>痛みがあれば中止</span>
                     </div>
                   </div>
@@ -319,7 +363,10 @@ function App() {
                 className="group relative inline-flex items-center justify-center px-12 py-5 text-2xl font-bold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
               >
                 <span className="relative flex items-center gap-3">
-                  <span className="text-3xl animate-pulse-soft">🚀</span>
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                   <span>測定を開始する</span>
                 </span>
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300"></div>
@@ -386,7 +433,11 @@ function App() {
           <div className="grid md:grid-cols-3 gap-6 mb-6">
             <div className="text-center md:text-left">
               <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
-                <span className="text-2xl">🧘‍♂️</span>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
                 <span className="font-bold gradient-text text-lg">NeckRange AI</span>
               </div>
               <p className="text-sm text-gray-600">
