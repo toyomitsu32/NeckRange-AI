@@ -32,28 +32,45 @@ export const PoseAnalysis: React.FC<PoseAnalysisProps> = ({
 
   useEffect(() => {
     const analyzeImage = async () => {
-      if (isPoseLoading) return;
+      if (isPoseLoading) {
+        console.log('Waiting for MediaPipe Pose to load...');
+        return;
+      }
 
       setIsAnalyzing(true);
+      console.log('Starting image analysis for:', imageType);
 
       try {
         // 画像を読み込み
         const img = new Image();
-        img.crossOrigin = 'anonymous';
+        // CORS問題を回避するため、Data URLの場合はcrossOriginを設定しない
+        if (!imageUrl.startsWith('data:')) {
+          img.crossOrigin = 'anonymous';
+        }
         
         await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
+          img.onload = () => {
+            console.log('Image loaded:', img.width, 'x', img.height);
+            resolve(null);
+          };
+          img.onerror = (e) => {
+            console.error('Image load error:', e);
+            reject(new Error('画像の読み込みに失敗しました'));
+          };
           img.src = imageUrl;
         });
 
         imageRef.current = img;
 
         // ポーズ検出を実行
+        console.log('Processing image with MediaPipe Pose...');
         const detectedLandmarks = await processImage(img);
+        console.log('Detected landmarks:', detectedLandmarks ? detectedLandmarks.length : 'null');
 
         if (!detectedLandmarks || detectedLandmarks.length === 0) {
-          onError('姿勢を検出できませんでした。別の画像を試してください。');
+          const errorMsg = '姿勢を検出できませんでした。人物が画面全体に映っているか確認してください。';
+          console.error(errorMsg);
+          onError(errorMsg);
           return;
         }
 
@@ -144,10 +161,18 @@ export const PoseAnalysis: React.FC<PoseAnalysisProps> = ({
 
   return (
     <div className="w-full">
-      {isAnalyzing && (
-        <div className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <span className="ml-4 text-lg text-gray-700">画像を解析中...</span>
+      {isPoseLoading && (
+        <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+          <p className="font-bold">MediaPipe Poseを読み込んでいます...</p>
+          <p className="text-sm">初回は少し時間がかかる場合があります。</p>
+        </div>
+      )}
+
+      {isAnalyzing && !isPoseLoading && (
+        <div className="flex flex-col items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+          <span className="text-lg text-gray-700 font-semibold">画像を解析中...</span>
+          <span className="text-sm text-gray-500 mt-2">AIが姿勢を検出しています</span>
         </div>
       )}
 

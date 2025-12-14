@@ -98,10 +98,21 @@ export function usePoseDetection({ onResults }: UsePoseDetectionProps = {}): Use
 
     try {
       landmarksRef.current = null;
+      
+      console.log('Processing image with MediaPipe Pose...');
       await pose.send({ image: imageElement });
       
-      // 結果が非同期で返ってくるので少し待つ
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // 結果が非同期で返ってくるのを待つ（最大3秒）
+      const maxWaitTime = 3000;
+      const checkInterval = 100;
+      let waited = 0;
+      
+      while (!landmarksRef.current && waited < maxWaitTime) {
+        await new Promise(resolve => setTimeout(resolve, checkInterval));
+        waited += checkInterval;
+      }
+      
+      console.log('Landmarks detected:', landmarksRef.current ? (landmarksRef.current as Landmark[]).length : 0);
       
       return landmarksRef.current;
     } catch (err) {
