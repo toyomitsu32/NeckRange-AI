@@ -177,14 +177,25 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
       {/* ヘッダー */}
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-800">
-            🎯 NeckRange AI
-          </h1>
-          <p className="text-gray-600 mt-1">首の可動域測定サービス</p>
+      <header className="glass-card shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">🧘‍♂️</div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold gradient-text">
+                  NeckRange AI
+                </h1>
+                <p className="text-xs md:text-sm text-gray-600">AI首可動域測定</p>
+              </div>
+            </div>
+            <div className="hidden md:flex items-center gap-2 bg-gradient-to-r from-purple-100 to-blue-100 px-4 py-2 rounded-full">
+              <span className="text-xl">✨</span>
+              <span className="text-sm font-semibold text-gray-700">プロ整体師レベルの診断</span>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -200,80 +211,123 @@ function App() {
 
         {/* イントロ画面 */}
         {appState === 'intro' && (
-          <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-xl p-8">
-            <div className="text-center mb-8">
-              <div className="text-6xl mb-4">🎯</div>
-              <h2 className="text-4xl font-bold mb-4 text-gray-800">
-                NeckRange AI へようこそ
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                AIが首の可動域を測定し、姿勢のバランスを診断します
-              </p>
+          <div className="max-w-6xl mx-auto">
+            {/* ヒーローセクション */}
+            <div className="glass-card rounded-3xl p-8 md:p-12 mb-8 animate-fade-in-up">
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="flex-1 text-center md:text-left">
+                  <div className="inline-block mb-4">
+                    <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      AI搭載・無料診断
+                    </span>
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text leading-tight">
+                    首の可動域を<br/>AIで測定
+                  </h2>
+                  <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                    スマホで撮影するだけで、首の柔軟性と左右のバランスを<br className="hidden md:block"/>
+                    プロの整体師レベルで診断します
+                  </p>
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <span className="text-2xl">⚡</span>
+                      <span className="font-medium">わずか3分</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <span className="text-2xl">🎯</span>
+                      <span className="font-medium">高精度AI診断</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <span className="text-2xl">📊</span>
+                      <span className="font-medium">詳細レポート</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 relative">
+                  <div className="relative animate-float">
+                    <div className="text-9xl text-center">🧘‍♂️</div>
+                    <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-white/50 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
+                      <span className="text-sm font-semibold text-gray-700">首の健康チェック</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* 使い方 */}
-            <div className="bg-blue-50 rounded-lg p-6 mb-8">
-              <h3 className="text-2xl font-semibold mb-4 text-blue-900">📝 使い方</h3>
-              <ol className="space-y-4">
-                <li className="flex items-start">
-                  <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">
-                    1
-                  </span>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-1">正面画像の撮影</h4>
-                    <p className="text-gray-600">まっすぐ前を向いた状態で撮影します</p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">
-                    2
-                  </span>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-1">右側屈画像の撮影</h4>
-                    <p className="text-gray-600">肩を動かさず、首だけを右に傾けます</p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">
-                    3
-                  </span>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-1">左側屈画像の撮影</h4>
-                    <p className="text-gray-600">肩を動かさず、首だけを左に傾けます</p>
-                  </div>
-                </li>
-              </ol>
+            {/* 3ステップ説明 */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="glass-card rounded-2xl p-6 hover-lift animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+                <div className="bg-gradient-to-br from-blue-500 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mb-4 shadow-lg">
+                  1
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">正面を撮影</h3>
+                <p className="text-gray-600 mb-4">まっすぐ前を向いた状態で撮影します</p>
+                <div className="text-6xl text-center animate-pulse-soft">👤</div>
+              </div>
+
+              <div className="glass-card rounded-2xl p-6 hover-lift animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                <div className="bg-gradient-to-br from-purple-500 to-pink-600 w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mb-4 shadow-lg">
+                  2
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">右側屈を撮影</h3>
+                <p className="text-gray-600 mb-4">肩を動かさず、首だけを右に傾けます</p>
+                <div className="text-6xl text-center animate-pulse-soft" style={{animationDelay: '0.3s'}}>🙇</div>
+              </div>
+
+              <div className="glass-card rounded-2xl p-6 hover-lift animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+                <div className="bg-gradient-to-br from-pink-500 to-red-600 w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mb-4 shadow-lg">
+                  3
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">左側屈を撮影</h3>
+                <p className="text-gray-600 mb-4">肩を動かさず、首だけを左に傾けます</p>
+                <div className="text-6xl text-center animate-pulse-soft" style={{animationDelay: '0.6s'}}>🙇‍♂️</div>
+              </div>
             </div>
 
             {/* 注意事項 */}
-            <div className="bg-yellow-50 rounded-lg p-6 mb-8 border-2 border-yellow-200">
-              <h3 className="text-lg font-semibold mb-3 text-yellow-900">⚠️ 撮影時の注意</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>肩を動かさないように注意してください</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>明るい場所で撮影してください</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>顔全体と肩が画面に収まるようにしてください</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>痛みを感じたら無理をしないでください</span>
-                </li>
-              </ul>
+            <div className="glass-card rounded-2xl p-6 mb-8 border-l-4 border-yellow-500 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+              <div className="flex items-start gap-4">
+                <div className="text-4xl">💡</div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold mb-3 text-gray-800">撮影のコツ</h3>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <span className="text-green-500">✓</span>
+                      <span>肩を水平に保つ</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <span className="text-green-500">✓</span>
+                      <span>明るい場所で撮影</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <span className="text-green-500">✓</span>
+                      <span>顔と肩を画面内に</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <span className="text-green-500">✓</span>
+                      <span>痛みがあれば中止</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <button
-              onClick={handleStartCapture}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl py-4 px-8 rounded-lg transition-colors shadow-lg"
-            >
-              🚀 測定を開始する
-            </button>
+            {/* CTAボタン */}
+            <div className="text-center animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+              <button
+                onClick={handleStartCapture}
+                className="group relative inline-flex items-center justify-center px-12 py-5 text-2xl font-bold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
+              >
+                <span className="relative flex items-center gap-3">
+                  <span className="text-3xl animate-pulse-soft">🚀</span>
+                  <span>測定を開始する</span>
+                </span>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300"></div>
+              </button>
+              <p className="text-gray-500 mt-4 text-sm">
+                所要時間: 約3分 | 完全無料 | 個人情報不要
+              </p>
+            </div>
           </div>
         )}
 
@@ -327,11 +381,37 @@ function App() {
       </main>
 
       {/* フッター */}
-      <footer className="bg-white mt-16 py-6 border-t">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-600">
-          <p className="text-sm">
-            © 2024 NeckRange AI. この診断は医学的診断に代わるものではありません。
-          </p>
+      <footer className="glass-card mt-16 py-8 border-t border-white/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <div className="text-center md:text-left">
+              <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
+                <span className="text-2xl">🧘‍♂️</span>
+                <span className="font-bold gradient-text text-lg">NeckRange AI</span>
+              </div>
+              <p className="text-sm text-gray-600">
+                AI技術で首の健康をサポート
+              </p>
+            </div>
+            <div className="text-center">
+              <h4 className="font-semibold text-gray-800 mb-2">こんな方におすすめ</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>デスクワークが多い方</li>
+                <li>首や肩のコリに悩む方</li>
+                <li>姿勢改善を目指す方</li>
+              </ul>
+            </div>
+            <div className="text-center md:text-right">
+              <h4 className="font-semibold text-gray-800 mb-2">サポート</h4>
+              <p className="text-sm text-gray-600">
+                この診断は医療行為ではありません<br/>
+                痛みがある場合は医師にご相談ください
+              </p>
+            </div>
+          </div>
+          <div className="text-center text-sm text-gray-500 pt-4 border-t border-gray-200">
+            © 2024 NeckRange AI. All rights reserved.
+          </div>
         </div>
       </footer>
     </div>
