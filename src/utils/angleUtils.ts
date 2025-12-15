@@ -78,14 +78,18 @@ export function calculateShoulderAngle(landmarks: Landmark[]): number {
  */
 export function calculateNeckTiltAngle(landmarks: Landmark[]): number {
   // MediaPipe Holisticの顔メッシュが利用可能か確認
+  console.log('🧮 [DEBUG] calculateNeckTiltAngle called');
+  console.log('🧮 [DEBUG] Landmarks received:', landmarks);
+  console.log('🧮 [DEBUG] Checking for faceLandmarks...');
   const faceLandmarks = (landmarks as any).faceLandmarks as Landmark[] | undefined;
+  console.log('🧮 [DEBUG] faceLandmarks:', faceLandmarks ? `Found (${faceLandmarks.length} points)` : 'Not found');
   
   let chinX: number, chinY: number;
   let earCenterX: number, earCenterY: number;
   
   if (faceLandmarks && faceLandmarks.length >= 468) {
     // MediaPipe Holistic使用時：顔メッシュ468点から高精度に取得
-    console.log('Using MediaPipe Holistic face mesh (468 points) for high precision');
+    console.log('✅ [DEBUG] Using MediaPipe Holistic face mesh (468 points) for HIGH PRECISION');
     
     // 顎先のランドマーク（Face Mesh index 152）
     const chinTip = faceLandmarks[152];
@@ -120,7 +124,7 @@ export function calculateNeckTiltAngle(landmarks: Landmark[]): number {
     });
   } else {
     // MediaPipe Pose使用時：従来の方法（口の中点で顎を推定）
-    console.log('Using MediaPipe Pose (33 points) - standard precision');
+    console.log('⚠️ [DEBUG] Using MediaPipe Pose (33 points) - STANDARD PRECISION (fallback)');
     
     const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
     const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
