@@ -41,18 +41,64 @@ export function drawLandmarks(
     }
   });
   
-  // 顎の位置（口の中点）を描画
-  const mouthLeft = landmarks[POSE_LANDMARKS.MOUTH_LEFT];
-  const mouthRight = landmarks[POSE_LANDMARKS.MOUTH_RIGHT];
-  const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
-  const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
+  // 顎の位置と耳の中点を描画
+  // MediaPipe Holisticの顔メッシュが利用可能な場合は高精度なランドマークを使用
+  const faceLandmarks = (landmarks as any).faceLandmarks as Landmark[] | undefined;
   
-  if (mouthLeft && mouthRight && 
-      mouthLeft.visibility && mouthRight.visibility &&
-      mouthLeft.visibility > 0.5 && mouthRight.visibility > 0.5) {
-    const chinX = ((mouthLeft.x + mouthRight.x) / 2) * width;
-    const chinY = ((mouthLeft.y + mouthRight.y) / 2) * height;
+  let chinX: number = 0, chinY: number = 0;
+  let earCenterX: number = 0, earCenterY: number = 0;
+  let hasChinData = false;
+  let hasEarData = false;
+  
+  if (faceLandmarks && faceLandmarks.length >= 468) {
+    // MediaPipe Holistic使用時：顔メッシュから高精度に取得
+    const chinTip = faceLandmarks[152];
+    if (chinTip) {
+      chinX = chinTip.x * width;
+      chinY = chinTip.y * height;
+      hasChinData = true;
+    }
     
+    // 耳の周辺ランドマークから高精度な耳の中点を計算
+    const leftEarPoints = [faceLandmarks[234], faceLandmarks[127]].filter(p => p);
+    const rightEarPoints = [faceLandmarks[454], faceLandmarks[356]].filter(p => p);
+    
+    if (leftEarPoints.length > 0 && rightEarPoints.length > 0) {
+      const leftEarX = leftEarPoints.reduce((sum, p) => sum + p.x, 0) / leftEarPoints.length;
+      const leftEarY = leftEarPoints.reduce((sum, p) => sum + p.y, 0) / leftEarPoints.length;
+      const rightEarX = rightEarPoints.reduce((sum, p) => sum + p.x, 0) / rightEarPoints.length;
+      const rightEarY = rightEarPoints.reduce((sum, p) => sum + p.y, 0) / rightEarPoints.length;
+      
+      earCenterX = ((leftEarX + rightEarX) / 2) * width;
+      earCenterY = ((leftEarY + rightEarY) / 2) * height;
+      hasEarData = true;
+    }
+  } else {
+    // MediaPipe Pose使用時：従来の方法
+    const mouthLeft = landmarks[POSE_LANDMARKS.MOUTH_LEFT];
+    const mouthRight = landmarks[POSE_LANDMARKS.MOUTH_RIGHT];
+    const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
+    const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
+    
+    if (mouthLeft && mouthRight && 
+        mouthLeft.visibility && mouthRight.visibility &&
+        mouthLeft.visibility > 0.5 && mouthRight.visibility > 0.5) {
+      chinX = ((mouthLeft.x + mouthRight.x) / 2) * width;
+      chinY = ((mouthLeft.y + mouthRight.y) / 2) * height;
+      hasChinData = true;
+    }
+    
+    if (leftEar && rightEar && 
+        leftEar.visibility && rightEar.visibility &&
+        leftEar.visibility > 0.5 && rightEar.visibility > 0.5) {
+      earCenterX = ((leftEar.x + rightEar.x) / 2) * width;
+      earCenterY = ((leftEar.y + rightEar.y) / 2) * height;
+      hasEarData = true;
+    }
+  }
+  
+  // 顎の位置を描画
+  if (hasChinData) {
     // 顎の位置を強調表示（より大きく、異なる色）
     ctx.fillStyle = '#ff00ff'; // マゼンタ色で目立たせる
     ctx.beginPath();
@@ -68,12 +114,7 @@ export function drawLandmarks(
   }
   
   // 耳の中点を描画
-  if (leftEar && rightEar && 
-      leftEar.visibility && rightEar.visibility &&
-      leftEar.visibility > 0.5 && rightEar.visibility > 0.5) {
-    const earCenterX = ((leftEar.x + rightEar.x) / 2) * width;
-    const earCenterY = ((leftEar.y + rightEar.y) / 2) * height;
-    
+  if (hasEarData) {
     // 耳の中点を強調表示（シアン色）
     ctx.fillStyle = '#00ffff'; // シアン色
     ctx.beginPath();
@@ -179,6 +220,7 @@ export function drawShoulderLine(
 
 /**
  * 首の傾き角度線を描画
+ * MediaPipe Holisticの顔メッシュが利用可能な場合は高精度なランドマークを使用
  * 
  * @param ctx - Canvasコンテキスト
  * @param landmarks - MediaPipeのランドマーク配列
@@ -193,21 +235,50 @@ export function drawNeckAngleLine(
   height: number,
   angle: number
 ): void {
-  // 顔のランドマーク取得
-  const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
-  const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
-  const mouthLeft = landmarks[POSE_LANDMARKS.MOUTH_LEFT];
-  const mouthRight = landmarks[POSE_LANDMARKS.MOUTH_RIGHT];
+  // MediaPipe Holisticの顔メッシュが利用可能か確認
+  const faceLandmarks = (landmarks as any).faceLandmarks as Landmark[] | undefined;
+  
+  let chinX: number, chinY: number;
+  let earCenterX: number, earCenterY: number;
+  
+  if (faceLandmarks && faceLandmarks.length >= 468) {
+    // MediaPipe Holistic使用時：顔メッシュから高精度に取得
+    const chinTip = faceLandmarks[152];
+    if (!chinTip) return;
+    
+    chinX = chinTip.x * width;
+    chinY = chinTip.y * height;
+    
+    // 耳の周辺ランドマークから高精度な耳の中点を計算
+    const leftEarPoints = [faceLandmarks[234], faceLandmarks[127]].filter(p => p);
+    const rightEarPoints = [faceLandmarks[454], faceLandmarks[356]].filter(p => p);
+    
+    if (leftEarPoints.length === 0 || rightEarPoints.length === 0) return;
+    
+    const leftEarX = leftEarPoints.reduce((sum, p) => sum + p.x, 0) / leftEarPoints.length;
+    const leftEarY = leftEarPoints.reduce((sum, p) => sum + p.y, 0) / leftEarPoints.length;
+    const rightEarX = rightEarPoints.reduce((sum, p) => sum + p.x, 0) / rightEarPoints.length;
+    const rightEarY = rightEarPoints.reduce((sum, p) => sum + p.y, 0) / rightEarPoints.length;
+    
+    earCenterX = ((leftEarX + rightEarX) / 2) * width;
+    earCenterY = ((leftEarY + rightEarY) / 2) * height;
+  } else {
+    // MediaPipe Pose使用時：従来の方法
+    const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
+    const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
+    const mouthLeft = landmarks[POSE_LANDMARKS.MOUTH_LEFT];
+    const mouthRight = landmarks[POSE_LANDMARKS.MOUTH_RIGHT];
 
-  if (!leftEar || !rightEar || !mouthLeft || !mouthRight) return;
+    if (!leftEar || !rightEar || !mouthLeft || !mouthRight) return;
 
-  // 顎の位置を計算（口の中点）
-  const chinX = ((mouthLeft.x + mouthRight.x) / 2) * width;
-  const chinY = ((mouthLeft.y + mouthRight.y) / 2) * height;
+    // 顎の位置を計算（口の中点）
+    chinX = ((mouthLeft.x + mouthRight.x) / 2) * width;
+    chinY = ((mouthLeft.y + mouthRight.y) / 2) * height;
 
-  // 耳の中点を計算
-  const earCenterX = ((leftEar.x + rightEar.x) / 2) * width;
-  const earCenterY = ((leftEar.y + rightEar.y) / 2) * height;
+    // 耳の中点を計算
+    earCenterX = ((leftEar.x + rightEar.x) / 2) * width;
+    earCenterY = ((leftEar.y + rightEar.y) / 2) * height;
+  }
 
   // 顎から耳の中点への線を描画（首の角度線）
   ctx.strokeStyle = '#ffff00';

@@ -71,36 +71,82 @@ export function calculateShoulderAngle(landmarks: Landmark[]): number {
 /**
  * 首の傾き角度を計算
  * 顎の位置を基準として、耳の中点までの角度を計算
+ * MediaPipe Holisticの顔メッシュ（468点）が利用可能な場合はより高精度な計算を行う
  * 
  * @param landmarks - MediaPipeのランドマーク配列
  * @returns 首の傾き角度（度）正の値は右傾き、負の値は左傾き
  */
 export function calculateNeckTiltAngle(landmarks: Landmark[]): number {
-  // 顔のランドマーク取得
-  const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
-  const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
-  const mouthLeft = landmarks[POSE_LANDMARKS.MOUTH_LEFT];
-  const mouthRight = landmarks[POSE_LANDMARKS.MOUTH_RIGHT];
+  // MediaPipe Holisticの顔メッシュが利用可能か確認
+  const faceLandmarks = (landmarks as any).faceLandmarks as Landmark[] | undefined;
+  
+  let chinX: number, chinY: number;
+  let earCenterX: number, earCenterY: number;
+  
+  if (faceLandmarks && faceLandmarks.length >= 468) {
+    // MediaPipe Holistic使用時：顔メッシュ468点から高精度に取得
+    console.log('Using MediaPipe Holistic face mesh (468 points) for high precision');
+    
+    // 顎先のランドマーク（Face Mesh index 152）
+    const chinTip = faceLandmarks[152];
+    if (!chinTip) {
+      throw new Error('顎先ランドマーク（Face Mesh 152）の検出に失敗しました');
+    }
+    chinX = chinTip.x;
+    chinY = chinTip.y;
+    
+    // 耳の周辺ランドマークから高精度な耳の中点を計算
+    // 左耳: index 234 (耳の前), 127 (耳のトップ付近)
+    // 右耳: index 454 (耳の前), 356 (耳のトップ付近)
+    const leftEarPoints = [faceLandmarks[234], faceLandmarks[127]].filter(p => p);
+    const rightEarPoints = [faceLandmarks[454], faceLandmarks[356]].filter(p => p);
+    
+    if (leftEarPoints.length === 0 || rightEarPoints.length === 0) {
+      throw new Error('耳のランドマーク（Face Mesh）の検出に失敗しました');
+    }
+    
+    const leftEarX = leftEarPoints.reduce((sum, p) => sum + p.x, 0) / leftEarPoints.length;
+    const leftEarY = leftEarPoints.reduce((sum, p) => sum + p.y, 0) / leftEarPoints.length;
+    const rightEarX = rightEarPoints.reduce((sum, p) => sum + p.x, 0) / rightEarPoints.length;
+    const rightEarY = rightEarPoints.reduce((sum, p) => sum + p.y, 0) / rightEarPoints.length;
+    
+    earCenterX = (leftEarX + rightEarX) / 2;
+    earCenterY = (leftEarY + rightEarY) / 2;
+    
+    console.log('High precision landmarks from face mesh:', {
+      chinTip: { x: chinX.toFixed(4), y: chinY.toFixed(4) },
+      leftEar: { x: leftEarX.toFixed(4), y: leftEarY.toFixed(4) },
+      rightEar: { x: rightEarX.toFixed(4), y: rightEarY.toFixed(4) }
+    });
+  } else {
+    // MediaPipe Pose使用時：従来の方法（口の中点で顎を推定）
+    console.log('Using MediaPipe Pose (33 points) - standard precision');
+    
+    const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
+    const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
+    const mouthLeft = landmarks[POSE_LANDMARKS.MOUTH_LEFT];
+    const mouthRight = landmarks[POSE_LANDMARKS.MOUTH_RIGHT];
 
-  // 顎の位置を計算（口の中点）
-  if (!mouthLeft || !mouthRight || 
-      !mouthLeft.visibility || !mouthRight.visibility ||
-      mouthLeft.visibility <= 0.5 || mouthRight.visibility <= 0.5) {
-    throw new Error('顎（口）の検出に失敗しました');
+    // 顎の位置を計算（口の中点）
+    if (!mouthLeft || !mouthRight || 
+        !mouthLeft.visibility || !mouthRight.visibility ||
+        mouthLeft.visibility <= 0.5 || mouthRight.visibility <= 0.5) {
+      throw new Error('顎（口）の検出に失敗しました');
+    }
+
+    chinX = (mouthLeft.x + mouthRight.x) / 2;
+    chinY = (mouthLeft.y + mouthRight.y) / 2;
+
+    // 耳の中点を計算（頭頂部の代表点）
+    if (!leftEar || !rightEar || 
+        !leftEar.visibility || !rightEar.visibility ||
+        leftEar.visibility <= 0.5 || rightEar.visibility <= 0.5) {
+      throw new Error('耳の検出に失敗しました');
+    }
+
+    earCenterX = (leftEar.x + rightEar.x) / 2;
+    earCenterY = (leftEar.y + rightEar.y) / 2;
   }
-
-  const chinX = (mouthLeft.x + mouthRight.x) / 2;
-  const chinY = (mouthLeft.y + mouthRight.y) / 2;
-
-  // 耳の中点を計算（頭頂部の代表点）
-  if (!leftEar || !rightEar || 
-      !leftEar.visibility || !rightEar.visibility ||
-      leftEar.visibility <= 0.5 || rightEar.visibility <= 0.5) {
-    throw new Error('耳の検出に失敗しました');
-  }
-
-  const earCenterX = (leftEar.x + rightEar.x) / 2;
-  const earCenterY = (leftEar.y + rightEar.y) / 2;
 
   // 顎から耳の中点へのベクトルと垂直線のなす角を計算
   const dx = earCenterX - chinX;
@@ -111,6 +157,7 @@ export function calculateNeckTiltAngle(landmarks: Landmark[]): number {
   const degrees = radians * (180 / Math.PI);
 
   console.log('Neck tilt angle calculation:', {
+    method: faceLandmarks ? 'Holistic (High Precision)' : 'Pose (Standard)',
     chin: { x: chinX.toFixed(3), y: chinY.toFixed(3) },
     earCenter: { x: earCenterX.toFixed(3), y: earCenterY.toFixed(3) },
     dx: dx.toFixed(4), 

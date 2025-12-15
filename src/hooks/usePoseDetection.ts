@@ -1,32 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
 import { Landmark } from '../types/pose';
 
-// MediaPipe Poseの型定義をグローバルから取得
+// MediaPipe Holisticの型定義をグローバルから取得
 declare global {
   interface Window {
-    Pose: any;
+    Holistic: any;
   }
 }
 
-type Pose = any;
-type Results = any;
+type Holistic = any;
+type HolisticResults = any;
 
 interface UsePoseDetectionProps {
   onResults?: (landmarks: Landmark[]) => void;
 }
 
 interface UsePoseDetectionReturn {
-  pose: Pose | null;
+  pose: Holistic | null;
   isLoading: boolean;
   error: string | null;
   processImage: (imageElement: HTMLImageElement) => Promise<Landmark[] | null>;
 }
 
 /**
- * MediaPipe Poseを使用した姿勢検出のカスタムフック
+ * MediaPipe Holisticを使用した姿勢検出のカスタムフック
+ * (従来のPoseより高精度な顔468点+姿勢33点+手42点を検出)
  */
 export function usePoseDetection({ onResults }: UsePoseDetectionProps = {}): UsePoseDetectionReturn {
-  const [pose, setPose] = useState<Pose | null>(null);
+  const [pose, setPose] = useState<Holistic | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const landmarksRef = useRef<Landmark[] | null>(null);
@@ -38,45 +39,59 @@ export function usePoseDetection({ onResults }: UsePoseDetectionProps = {}): Use
       try {
         setIsLoading(true);
         
-        // MediaPipe PoseをCDNから動的に読み込む
-        console.log('Loading MediaPipe Pose from CDN...');
-        if (!window.Pose) {
+        // MediaPipe HolisticをCDNから動的に読み込む
+        console.log('Loading MediaPipe Holistic from CDN...');
+        if (!window.Holistic) {
           await new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js';
+            script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js';
             script.onload = resolve;
             script.onerror = reject;
             document.head.appendChild(script);
           });
-          console.log('MediaPipe Pose script loaded');
+          console.log('MediaPipe Holistic script loaded');
         }
         
-        // MediaPipe Poseのインスタンスを作成
-        console.log('Initializing MediaPipe Pose...');
-        const poseInstance = new window.Pose({
+        // MediaPipe Holisticのインスタンスを作成
+        console.log('Initializing MediaPipe Holistic...');
+        const holisticInstance = new window.Holistic({
           locateFile: (file: string) => {
             console.log('Loading MediaPipe file:', file);
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+            return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
           }
         });
 
         // オプションを設定（精度向上のため最適化）
-        poseInstance.setOptions({
-          modelComplexity: 2,              // 2: 最高精度モデル（1→2に変更）
+        holisticInstance.setOptions({
+          modelComplexity: 2,              // 2: 最高精度モデル
           smoothLandmarks: true,            // スムージング有効
           enableSegmentation: false,        // セグメンテーション無効（高速化）
           smoothSegmentation: false,
-          minDetectionConfidence: 0.7,      // 検出信頼度を70%に引き上げ（0.5→0.7）
-          minTrackingConfidence: 0.7        // トラッキング信頼度を70%に引き上げ（0.5→0.7）
+          refineFaceLandmarks: true,        // 顔ランドマークの精度向上（468点）
+          minDetectionConfidence: 0.7,      // 検出信頼度を70%に引き上げ
+          minTrackingConfidence: 0.7        // トラッキング信頼度を70%に引き上げ
         });
 
         // 結果のコールバックを設定
-        poseInstance.onResults((results: Results) => {
-          console.log('MediaPipe onResults called:', results.poseLandmarks ? 'Landmarks found' : 'No landmarks');
+        holisticInstance.onResults((results: HolisticResults) => {
+          console.log('MediaPipe Holistic onResults called:', {
+            pose: results.poseLandmarks ? 'Found' : 'Not found',
+            face: results.faceLandmarks ? `Found (${results.faceLandmarks.length} points)` : 'Not found',
+            leftHand: results.leftHandLandmarks ? 'Found' : 'Not found',
+            rightHand: results.rightHandLandmarks ? 'Found' : 'Not found'
+          });
+          
           if (results.poseLandmarks) {
             const landmarks = results.poseLandmarks as Landmark[];
             landmarksRef.current = landmarks;
-            console.log('Landmarks saved to ref:', landmarks.length);
+            console.log('Pose landmarks saved to ref:', landmarks.length);
+            
+            // 顔のランドマークも保存（後で使用するため）
+            if (results.faceLandmarks) {
+              console.log('Face landmarks detected:', results.faceLandmarks.length, 'points');
+              // グローバルに保存して顎と耳の精度向上に使用
+              (landmarksRef.current as any).faceLandmarks = results.faceLandmarks;
+            }
             
             if (onResults) {
               onResults(landmarks);
@@ -88,16 +103,16 @@ export function usePoseDetection({ onResults }: UsePoseDetectionProps = {}): Use
         });
 
         // 初期化を待つ
-        await poseInstance.initialize();
+        await holisticInstance.initialize();
 
         if (isMounted) {
-          setPose(poseInstance);
+          setPose(holisticInstance);
           setError(null);
         }
       } catch (err) {
         if (isMounted) {
-          console.error('Pose initialization error:', err);
-          setError(err instanceof Error ? err.message : 'Poseの初期化に失敗しました');
+          console.error('Holistic initialization error:', err);
+          setError(err instanceof Error ? err.message : 'MediaPipe Holisticの初期化に失敗しました');
         }
       } finally {
         if (isMounted) {
@@ -178,7 +193,7 @@ export function usePoseDetection({ onResults }: UsePoseDetectionProps = {}): Use
         });
       }
       
-      console.log('Processing image with MediaPipe Pose...', processImg.width, 'x', processImg.height);
+      console.log('Processing image with MediaPipe Holistic...', processImg.width, 'x', processImg.height);
       await pose.send({ image: processImg });
       
       // 結果が非同期で返ってくるのを待つ（最大5秒）
