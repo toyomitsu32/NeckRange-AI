@@ -27,6 +27,8 @@ export function drawLandmarks(
       POSE_LANDMARKS.RIGHT_EAR,
       POSE_LANDMARKS.LEFT_SHOULDER,
       POSE_LANDMARKS.RIGHT_SHOULDER,
+      POSE_LANDMARKS.MOUTH_LEFT,
+      POSE_LANDMARKS.MOUTH_RIGHT,
     ];
 
     if (importantIndices.includes(index)) {
@@ -38,6 +40,53 @@ export function drawLandmarks(
       ctx.fill();
     }
   });
+  
+  // 顎の位置（口の中点）を描画
+  const mouthLeft = landmarks[POSE_LANDMARKS.MOUTH_LEFT];
+  const mouthRight = landmarks[POSE_LANDMARKS.MOUTH_RIGHT];
+  const leftEar = landmarks[POSE_LANDMARKS.LEFT_EAR];
+  const rightEar = landmarks[POSE_LANDMARKS.RIGHT_EAR];
+  
+  if (mouthLeft && mouthRight && 
+      mouthLeft.visibility && mouthRight.visibility &&
+      mouthLeft.visibility > 0.5 && mouthRight.visibility > 0.5) {
+    const chinX = ((mouthLeft.x + mouthRight.x) / 2) * width;
+    const chinY = ((mouthLeft.y + mouthRight.y) / 2) * height;
+    
+    // 顎の位置を強調表示（より大きく、異なる色）
+    ctx.fillStyle = '#ff00ff'; // マゼンタ色で目立たせる
+    ctx.beginPath();
+    ctx.arc(chinX, chinY, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // 顎の点を縁取り
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(chinX, chinY, 8, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
+  
+  // 耳の中点を描画
+  if (leftEar && rightEar && 
+      leftEar.visibility && rightEar.visibility &&
+      leftEar.visibility > 0.5 && rightEar.visibility > 0.5) {
+    const earCenterX = ((leftEar.x + rightEar.x) / 2) * width;
+    const earCenterY = ((leftEar.y + rightEar.y) / 2) * height;
+    
+    // 耳の中点を強調表示（シアン色）
+    ctx.fillStyle = '#00ffff'; // シアン色
+    ctx.beginPath();
+    ctx.arc(earCenterX, earCenterY, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // 耳の中点を縁取り
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(earCenterX, earCenterY, 8, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
 }
 
 /**
