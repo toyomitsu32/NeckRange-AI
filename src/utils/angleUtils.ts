@@ -20,12 +20,17 @@ export function calculateAngle(x1: number, y1: number, x2: number, y2: number): 
  * 左肩と右肩のY座標の差から水平からの傾きを計算
  * 
  * @param landmarks - MediaPipeのランドマーク配列
+ * @param imageType - 画像タイプ（右側屈/左側屈の判定用、オプショナル）
  * @returns 肩の傾き角度（度）
- *          正の値：右肩が下がっている（右に傾いている）
- *          負の値：左肩が下がっている（左に傾いている）
+ *          imageType指定時：
+ *            - 右側屈（right）: 右に傾く = 正の値（+）
+ *            - 左側屈（left）: 左に傾く = 正の値（+）
+ *          imageType未指定時（従来の動作）：
+ *            - 正の値：右肩が下がっている（右に傾いている）
+ *            - 負の値：左肩が下がっている（左に傾いている）
  *          0：完全に水平
  */
-export function calculateShoulderAngle(landmarks: Landmark[]): number {
+export function calculateShoulderAngle(landmarks: Landmark[], imageType?: string): number {
   // 肩峰の位置を推定
   const leftAcromion = estimateAcromion(landmarks, 'left');
   const rightAcromion = estimateAcromion(landmarks, 'right');
@@ -61,9 +66,28 @@ export function calculateShoulderAngle(landmarks: Landmark[]): number {
 
   // Y座標の差から傾きを計算
   const radians = Math.atan(dy / dx);
-  const degrees = radians * (180 / Math.PI);
+  let degrees = radians * (180 / Math.PI);
 
-  console.log('Shoulder angle calculation:', { radians, degrees });
+  // imageTypeに応じて符号を調整
+  // 右側屈時: 右に傾く（右肩が下がる）をプラスにする
+  // 左側屈時: 左に傾く（左肩が下がる）をプラスにする
+  if (imageType === 'right' && degrees < 0) {
+    // 右側屈時: 右肩が下がっている（負の値）→ プラスに反転
+    degrees = -degrees;
+  } else if (imageType === 'left' && degrees > 0) {
+    // 左側屈時: 左肩が下がっている（正の値）→ プラスのまま（符号変換不要）
+    // ※既に正の値なので何もしない
+  } else if (imageType === 'left' && degrees < 0) {
+    // 左側屈時: 右肩が下がっている（負の値）→ プラスに反転
+    degrees = -degrees;
+  }
+
+  console.log('Shoulder angle calculation:', { 
+    radians, 
+    originalDegrees: radians * (180 / Math.PI),
+    adjustedDegrees: degrees,
+    imageType 
+  });
 
   return degrees;
 }

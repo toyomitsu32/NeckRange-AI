@@ -13,14 +13,16 @@ const SHOULDER_ANGLE_THRESHOLD = 10;
  * 
  * @param landmarks - MediaPipeのランドマーク配列
  * @param threshold - 許容角度（デフォルト: 5度）
+ * @param imageType - 画像タイプ（右側屈/左側屈の判定用、オプショナル）
  * @returns 検証結果
  */
 export function validateShoulderLevel(
   landmarks: Landmark[],
-  threshold: number = SHOULDER_ANGLE_THRESHOLD
+  threshold: number = SHOULDER_ANGLE_THRESHOLD,
+  imageType?: string
 ): ShoulderValidation {
   try {
-    const angle = calculateShoulderAngle(landmarks);
+    const angle = calculateShoulderAngle(landmarks, imageType);
     const absAngle = Math.abs(angle);
     
     if (absAngle > threshold) {

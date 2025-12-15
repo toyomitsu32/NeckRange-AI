@@ -85,8 +85,8 @@ export const PoseAnalysis: React.FC<PoseAnalysisProps> = ({
         // 肩の水平検証（正面以外の場合）
         let shoulderAngle: number | undefined;
         if (imageType !== ImageType.NEUTRAL) {
-          const shoulderValidation = validateShoulderLevel(detectedLandmarks);
-          shoulderAngle = shoulderValidation.angle; // 肩の角度を保存
+          const shoulderValidation = validateShoulderLevel(detectedLandmarks, 10, imageType);
+          shoulderAngle = shoulderValidation.angle; // 肩の角度を保存（右側屈時は右方向プラス、左側屈時は左方向プラス）
           
           if (!shoulderValidation.isValid) {
             onError(shoulderValidation.message);
